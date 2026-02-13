@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Labworks Games</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<canvas id="background"></canvas>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+// Scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xaaaaaa);
+
+// Camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1, 5);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background'), antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// GLTF Loader
+const loader = new GLTFLoader();
+loader.load(
+    './models/scene.gltf', // relative path to your GLTF
+    (gltf) => {
+        scene.add(gltf.scene);
+    },
+    (xhr) => {
+        console.log(`Loading: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
+    },
+    (error) => {
+        console.error('Error loading GLTF:', error);
+    }
+);
+
+// Lighting
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 10, 7.5);
+scene.add(light);
+
+// Resize handling
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+animate();
+</script>
+
+</body>
+</html>
